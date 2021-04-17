@@ -98,7 +98,7 @@ void listFilesRecursively(char *Path){
     	strcpy(rm,pfolder);
     	strcat(rm,"/");
     	strcat(rm,nama_pemilik);
-    	strcat(rm.".jpg");
+    	strcat(rm,".jpg");
     	strcat(pfolder,"/");
     	strcat(pfolder,dp->d_name);
    	 
