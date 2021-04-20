@@ -23,6 +23,7 @@ char keterangan[100] = "";
 
 ### Cara Pengerjaan 2A
 
-![carbon (1)](https://user-images.githubusercontent.com/64303057/115347017-18263900-a1db-11eb-95a1-552050e1f06a.png)
+![carbon (2)](https://user-images.githubusercontent.com/64303057/115360716-187a0080-a1ea-11eb-882f-2ce215845221.png)
+
 
 
