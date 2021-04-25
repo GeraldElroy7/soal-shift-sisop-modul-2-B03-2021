@@ -35,6 +35,42 @@ Tidak semua item perlu untuk di-*unzip*. Untuk menghindari *unzip* pada item/fol
 
 Setelah item yang diinginkan berhasil di-*unzip*, panggil `listFilesRecursively(loc)` untuk melakukan travers rekursif terhadap direktori `loc` untuk melanjutkan sub-soal selanjutnya.
 
+### Cara Pengerjaan 2B (Untuk yang fotonya hanya ada satu hewan)
 
+![carbon (3)](https://user-images.githubusercontent.com/64303057/115986381-1349f680-a5da-11eb-9440-f7615e44aed3.png)
+
+Sebelumnya,  `listFilesRecursively()` akan dijalankan sesuai dengan yang ada pada modul, seperti memakai `struct dirent` dan `while ((dp = readdir(dir)) != NULL)` agar travers file dapat berjalan terus. Program akan mengambil string dari nama file hingga bertemu tanda ";" pertama, lalu lakukan `mkdir` agar membuat folder sesuai dengan jenis hewannya.
+
+### Cara Pengerjaan 2C (Untuk yang fotonya hanya ada satu hewan)
+
+![carbon (4)](https://user-images.githubusercontent.com/64303057/115987123-e5ff4780-a5dd-11eb-8fb9-ad9fde573397.png)
+
+Untuk 2C, user diminta untuk bisa memindahkan tiap foto ke folder sesuai dengan jenis hewannya. Awalnya, inisiasikan dulu dua char yang akan menyimpan alamat.
+
+```c
+char mfolder[100] = "/home/frozz/modul2/petshop/";
+strcat(mfolder, dp->d_name);
+```
+
+**mfolder** akan berfungsi untuk menyimpan alamat direktori petshop, ditambah dengan nama folder untuk tiap hewan yang baru saja dibuat. 
+
+```c
+char petfile[100] = "";
+strcpy(petfile, dp->d_name);
+```
+Lalu, ada **petfile** yang akan menyimpan nama file dari setiap foto yang nanti akan diiterasi.
+
+Cara pengerjaan soal nomor 2 ini akan dipisah, satu untuk foto yang hewannya hanya  ada satu dan foto yang hewannya ada dua. Kedua hal ini dibedakan oleh nama file-nya, di mana jika ada dua hewan, maka nama filenya akan mengandung simbol "_".
+
+Untuk yang fotonya hanya satu hewan, maka jalankan permisalan : 
+```c
+if (!(strstr(dp->d_name, delimiter)))
+```
+
+`Delimiter` ini berisikan karakter "_".
+
+Jadi, **if** ini akan berjalan jika ada file yang **tidak** memiliki _
+
+Lakukan command `mv` untuk memindahkan foto ke folder yang sesuai dengan jenisnya.
 
 
