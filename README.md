@@ -593,7 +593,7 @@ Untuk argumen '-x', maka killer.sh akan di isi dengan argumen kill pid. Sehinnga
 Setelah dijalankan, Program Killer akan di remove dengan `rm Killer`
 
 _**Sumber Kode**_
-[SourceCodeSoal1](https://github.com/GeraldElroy7/soal-shift-sisop-modul-2-B03-2021/tree/main/soal3)
+[SourceCodeSoal3](https://github.com/GeraldElroy7/soal-shift-sisop-modul-2-B03-2021/tree/main/soal3)
 
 ### Output
 
