@@ -73,4 +73,26 @@ Jadi, **if** ini akan berjalan jika ada file yang **tidak** memiliki _
 
 Lakukan command `mv` untuk memindahkan foto ke folder yang sesuai dengan jenisnya.
 
+### Lanjutan 2C (Mengganti nama file menjadi namapeliharaan.jpg)
 
+![carbon (5)](https://user-images.githubusercontent.com/64303057/115989697-c66e1c00-a5e9-11eb-8c57-6015b1677051.png)
+
+Buatlah string rm yang akan menyimpan nama peliharaan lalu menambahkannya dengan alamat direktori. Lalu lakukan proses baru, agar memindahkan foto-foto tersebut sesuai dengan folder yang sesuai.
+
+### Cara Pengerjaan 2E (Untuk yang fotonya hanya ada satu hewan)
+
+![carbon (6)](https://user-images.githubusercontent.com/64303057/115989940-ff5ac080-a5ea-11eb-83cf-306db6190d88.png)
+
+Nama hewan akan disimpan di char nama_hewan[]. Awalnya, `keterangan.txt` akan di-printkan sebuah tulisan, dan akan "dibuka" terlebih dulu dengan fungsi `fopen(...,"a")`, di mana a ini berfungsi untuk *append* setiap kata yang ada ke `keterangan.txt`.
+
+Inisiasi dulu check = 2, lalu lakukan perulangan. Setiap kali program menemukan ";" pada nama file (`a[0]`), maka nilai check akan berkurang, dan print **nama :**, sesuai dengan yang diminta pada soal. Jika sudah, maka akan di-*continue* langsung ke bawahnya.
+
+Begitu juga jika check sudah bernilai 1, periksa apakah program menemui karakter ";" lagi. Jika iya, maka print **umur :** pada akhir keterangan.txt.
+
+Dan untuk yang terakhir, jika sudah menemui akhiran ".jpg", maka print **tahun :** pada akhir txt. 
+
+Jika semua kondisi ini belum terpenuhi, maka print nama hewan dan data lainnya ke keterangan.txt hingga perulangan telah selesai.
+
+### Cara Pengerjaan 2B (Untuk yang fotonya ada dua hewan)
+
+![carbon (7)](https://user-images.githubusercontent.com/64303057/115990499-c7a14800-a5ed-11eb-9cce-cd0ec9a8587f.png)
