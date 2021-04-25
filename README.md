@@ -424,6 +424,12 @@ int main(int argc, char *argv[]) {
 - menyembunyikan program(berjalan sebagai background)
 - menjalankan program Daemon
 
+Program main dijalankan dengan sleep(40) sehingga terjadi jeda 40 detik. 
+Pada looping kedua dijalankan dengan sleep(5) sehingga terjadi jeda 5 detik.
+Pada batas looping, menggunakan batas dari 0 sampai kurang dari 10 agar terdownload 10 foto.
+Kemudian sebelum mendownload foto, format link diubah dengan tambahan `/%d/%d` yang berasal dari variabel,
+`int size_jpg = ((int)time(NULL) % 1000) + 50` untuk mendapatkan ukuran foto yang sesuai saat di download.
+
 ```c
 void getArg(int argc){
         if(argc != 2){
