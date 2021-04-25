@@ -90,7 +90,7 @@ void downloadFileRAR(pid_t c_id, char *zip_name[]) {
 }
 ```
 
-Untuk mendownload FileRAR, menggunakan link yang disimpan pada `download_links` kemudia men-loop sebanyak 3 kali sesuai dengan jumlah folder yang dibuat sebelumnya lalu menggunakan argumen asal `/usr/bin/wget` dengan tambahan `--no-check-certificate`, setelah itu di jeda `wait()`.
+Untuk mendownload FileRAR, menggunakan link yang disimpan pada `download_links` kemudian men-loop sebanyak 3 kali sesuai dengan jumlah folder yang dibuat sebelumnya lalu menggunakan argumen asal `/usr/bin/wget` dengan tambahan `--no-check-certificate`, setelah itu di jeda `wait()`.
 
 ### Cara Pengerjaan 1C
 
@@ -192,6 +192,9 @@ void zipFolders(pid_t c_id, char *stevany_folder[], char zip_name[]) {
 }
 ```
 Pada action 2, program akan menjalankan fungsi `removeZipFolder()` dan `zipFolders()` yang berada pada Program Daemon. Untuk zip menggunakan argumen asal `/usr/bin/zip`, kemudian di jeda `wait()`.
+
+_**Sumber Kode**_
+[SourceCodeSoal1](https://github.com/GeraldElroy7/soal-shift-sisop-modul-2-B03-2021/tree/main/soal1)
 
 ### Output
 
@@ -325,6 +328,9 @@ Untuk langkah berikutnya, prosesnya hampir sama dengan cara yang foto hewannya a
 
 Lalu, lakukan `closedir(dir)` untuk mengakhiri travers direktori.
 
+_**Sumber Kode**_
+[SourceCodeSoal2](https://github.com/GeraldElroy7/soal-shift-sisop-modul-2-B03-2021/tree/main/soal2)
+
 ### Output
 
 1. Direktori modul2/petshop sudah terbentuk beserta folder-folder untuk tiap jenis hewan
@@ -342,4 +348,261 @@ Lalu, lakukan `closedir(dir)` untuk mengakhiri travers direktori.
 2. Kesulitan untuk memisahkan foto yang ada dua hewan untuk diletakkan pada folder, terutama yang hewannya berbeda.
 3. Sempat melakukan revisi lagi karena lupa memanggil salah satu fork(), yang menyebabkan sebagian program jadi tidak berjalan.
 
+## Soal 3
 
+Pada soal 3, *user* diminta untuk membantu Ranora membuat sebuah program Daemon yang otomatis membuat folder setiap 40 detik yang didalamnya akan mendownload 10 foto berdasarkan ukuran yang diberikan dengan jeda 5 detik tiap foto. Setelah itu membuat status.txt yang merupakan enskripsi dari kata “Download Success” dan program Killer yang akan meng-kill pid program serta membuat program itu berjalan dengan dua argumen untuk menjalankan mode yang berbeda.
+
+Soal ini dikerjakan menggunakan `fork` dan `execl` agar bisa menjalankan banyak proses secara bersamaan. Main menunya adalah sebagai berikut:
+
+```c
+int main(int argc, char *argv[]) {
+
+    getArg(argc);
+
+    pid_t pid, sid;
+    pid = fork();
+
+    if (pid < 0)
+        exit(EXIT_FAILURE);
+    if (pid > 0)
+        exit(EXIT_SUCCESS);
+
+    umask(0);
+    sid = setsid();
+    if (sid < 0)
+        exit(EXIT_FAILURE);
+
+    close(STDIN_FILENO);
+    close(STDOUT_FILENO);
+    close(STDERR_FILENO);
+
+    makeKillersh(argv);
+
+    time_t curr_time;
+
+    while (1) {
+        curr_time = time(NULL);
+
+        pid_t c_id;
+        c_id = fork();
+
+        char *dir_name = getTimeName();
+        if (c_id < 0){
+            exit(EXIT_FAILURE);
+        }
+        if (c_id == 0) {
+            if (fork() == 0) {
+                make_directory(dir_name);
+            }
+            else {
+                wait(NULL);
+                    for (int i = 0; i < 10; i++) {
+                        if (fork() == 0) {
+
+                            char *linkinet = malloc(32 * sizeof(char));
+                            int size_jpg = ((int)time(NULL) % 1000) + 50;
+                            sprintf(linkinet, "https://picsum.photos/%d/%d", size_jpg, size_jpg);
+
+                            downloadPhotos(linkinet, dir_name);
+
+                        }
+                        sleep(5);
+                    }
+
+                    makeStatustxt(dir_name);
+                    zipDirectory(dir_name);
+            }
+    }
+    else
+      sleep(40);
+  }
+}
+```
+- mengecek jenis argumen dengan getArg()
+- melakukan fork() pada pid dan set sid
+- mengubah permission file dengan umask(0)
+- menyembunyikan program(berjalan sebagai background)
+- menjalankan program Daemon
+
+```c
+void getArg(int argc){
+        if(argc != 2){
+            puts("Argument tidak ada");
+            exit(EXIT_FAILURE);
+        }
+}
+```
+
+Untuk Program menggunakan bantuan tipe variabel `time_t` dan `struct tm*` untuk mendapatkan local time yang mana akan mendapatkan local time yang berupa bulan, hari, jam, menit, dan detik sebagai penamaan file atau folder dengan fungsi sebagai berikut:
+```c
+char *getTimeName(){
+    char *name = malloc(32 * sizeof(char));
+	time_t curr_time = time(NULL);
+	struct tm* p_time = localtime(&curr_time);
+
+	strftime(name, 32, "%Y-%m-%d_%H:%M:%S", p_time);
+	return name;
+}
+```
+mengedit format penamaan dengan `strftime` yang mana akan dimasukkan ke variabel `name`.
+
+### Cara Pengerjaan 3A
+
+```c
+/// Subsoal A (membuat folder)
+void make_directory(char *location){
+        //printf("Creating Directory -> %s\n", location);
+        execl("/bin/mkdir", "mkdir", location, NULL);
+}
+```
+
+Untuk membuat folder, menggunakan sumber variabel `location` dan argumen asal `/bin/mkdir`, setelah itu di jeda `wait()` pada main menunya.
+
+### Cara Pengerjaan 3B
+
+```c
+/// Subsoal B (mendownload foto tiap 5 detik)
+void downloadPhotos(char *linkinet, char *location){
+
+    char *p_loc = malloc(32 * sizeof(char));
+    sprintf(p_loc, "%s/%s.jpg", location, getTimeName());
+
+    execl("/usr/bin/wget", "wget", "-q", linkinet, "-O", p_loc, NULL);
+
+    free(location);
+}
+```
+
+Untuk mendownload foto, menggunakan link yang disimpan pada `linkinet` dan format path yang disimpan ke `p_loc` dari gabungan `location` dan `getTimeName()`, lalu menjalankan argumen asal `/usr/bin/wget`.
+
+### Cara Pengerjaan 3C
+
+```c
+/// Subsoal C (membuat status.txt)
+void makeStatustxt(char *file_name){
+    char *c_result = getCaesarCypher(5, "Download Success");
+    char *text = malloc(32 * sizeof(char));
+	char *location = malloc(32 * sizeof(char));
+
+	sprintf(text, "%s", c_result);
+	free(c_result);
+
+	sprintf(location, "%s/status.txt", file_name);
+	FILE *statusfile = fopen(location, "w");
+
+	if (statusfile){
+		fprintf(statusfile, "%s\n", text);
+		fclose(statusfile);
+	}
+	free(location);
+    free(text);
+}
+/// Caesar Cypher Func
+char *getCaesarCypher(int shift, char *text){
+	int length = strlen(text);
+	char *res_text;
+
+	res_text = malloc(length * sizeof(char));
+    int i = 0;
+	while(i < length){
+        if (text[i] >= 'a' && text[i] <= 'z')
+			res_text[i] = 'a' + (text[i] + shift - 'a') % 26;
+		else if (text[i] >= 'A' && text[i]+shift <= 'Z')
+			res_text[i] = 'A' + (text[i] + shift - 'A') % 26;
+		else
+			res_text[i] = text[i];
+
+		i++;
+	}
+	return res_text;
+}
+/// Subsoal C (menZIP folder)
+void zipDirectory(char *file_name){
+	char *zip_name = malloc(32 * sizeof(char));
+	char *location = malloc(32 * sizeof(char));
+
+	sprintf(zip_name, "%s.zip" ,file_name);
+	sprintf(location, "./%s" ,file_name);
+
+    printf("Making Zip File -> %s from %s\n", zip_name, location);
+	execl("/usr/bin/zip", "zip", "-q", "-rm", zip_name, location, NULL);
+
+	free(zip_name);
+	free(location);
+}
+```
+
+Untuk membuat status.txt, menggunakan fungsi `fopen(location, "w")` yang mana didalanya akan di isi dengan text dari hasil fungsi `getCaesarCypher(5, "Download Success")` dengan menggunakan fungsi,
+```c
+fprintf(statusfile, "%s\n", text);
+fclose(statusfile);
+```
+
+Pada fungsi `getCaesarCypher()` sendiri mengubah string asal dengan looping sampai batas panjang stringnya, lalu setiap char pada index diubah dan dimasukan ke variabel tujuan,
+```c
+        if (text[i] >= 'a' && text[i] <= 'z')
+			res_text[i] = 'a' + (text[i] + shift - 'a') % 26;
+		else if (text[i] >= 'A' && text[i]+shift <= 'Z')
+			res_text[i] = 'A' + (text[i] + shift - 'A') % 26;
+		else
+			res_text[i] = text[i];
+```
+
+Setelah itu, folder di Zip dengan menggunakan varibael `zip_name` dan `location` lalu menjalankan argumen asal `/usr/bin/zip`.
+
+### Cara Pengerjaan 3D dan 3E
+
+```c
+/// Subsoal E dan D(inisialisasi mode)
+void makeKillersh(char *argv[])
+{
+    FILE *killer_file = fopen("./killer.sh", "w");
+
+    if(strcmp(argv[1], "-z") == 0)
+        fprintf(killer_file, "#!/bin/bash\nkill -9 -%d\nrm Killer", getpid());
+
+    if(strcmp(argv[1], "-x") == 0)
+        fprintf(killer_file, "#!/bin/bash\nkill %d\nrm Killer", getpid());
+
+    if(fork() == 0) {
+        if (fork() == 0) {
+            char *argv[] = {"chmod", "u+x", "killer.sh", NULL};
+            execv("/bin/chmod", argv);
+        }
+        else  {
+            wait(NULL);
+            char *argv[] = {"mv", "killer.sh", "Killer", NULL};
+            execv("/bin/mv", argv);
+        }
+    }
+    fclose(killer_file);
+}
+```
+Untuk membuat program Killer, menggunakan fungsi `fopen("./killer.sh", "w")`, yang kemudian disesuaikan dengan argumen yang masuk yaitu '-z' atau '-x'. 
+Terakhir dalam pembuatan, menggunakan `chmod u+x` untuk mengubah file permission agar dapat di eksekusi.
+
+Untuk argumen '-z', maka killer.sh akan di isi dengan argumen kill -9 pid. Sehinnga ketika Killer dijalankan, maka proses akan seketika terhenti semua.
+Untuk argumen '-x', maka killer.sh akan di isi dengan argumen kill pid. Sehinnga ketika Killer dijalankan, maka proses akan terhenti saat semua proses childnya selesai.
+
+Setelah dijalankan, Program Killer akan di remove dengan `rm Killer`
+
+_**Sumber Kode**_
+[SourceCodeSoal1](https://github.com/GeraldElroy7/soal-shift-sisop-modul-2-B03-2021/tree/main/soal3)
+
+### Output
+
+1. Program Daemon dijalankan dengan Argumen -z
+![no3a](https://user-images.githubusercontent.com/65794806/115997670-938e4d00-a616-11eb-9f4a-25c50f687717.png)
+
+2. Program Killer dari Argumen -z dijalankan, sehingga proses langsung terhenti
+![no3bfix](https://user-images.githubusercontent.com/65794806/115997699-b587cf80-a616-11eb-94eb-b5fa8ccd989a.png)
+
+3. Program Daemon dijalankan dengan Argumen -x
+![no3dfix](https://user-images.githubusercontent.com/65794806/115997726-d4866180-a616-11eb-92dc-004baeca46f4.png)
+
+4. Program Killer dari Argumen -x dijalankan, sehingga proses parent terhenti akan tetapi proses child masih berjalan sampai folder ter-zip
+![no3e](https://user-images.githubusercontent.com/65794806/115997771-f54eb700-a616-11eb-8bf4-d8e6faab2dde.png)
+
+### Kendala Selama Pengerjaan
+
+1. Pada awalnya isi dari program Killer ter-_write_ dua kali.
