@@ -96,3 +96,47 @@ Jika semua kondisi ini belum terpenuhi, maka print nama hewan dan data lainnya k
 ### Cara Pengerjaan 2B (Untuk yang fotonya ada dua hewan)
 
 ![carbon (7)](https://user-images.githubusercontent.com/64303057/115990499-c7a14800-a5ed-11eb-9cce-cd0ec9a8587f.png)
+
+Lalu, untuk foto yang hewannya ada dua, cara penyelesaiannya juga hampir sama. Untuk pertama, jika ditemukan adanya karakter ";" pada nama filenya, maka buatlah folder sesuai dengan karakter yang sudah diambil (jenis hewan) dengan command `mkdir`.
+
+
+### Cara Pengerjaan 2B (Untuk yang fotonya ada dua hewan)
+
+![carbon (8)](https://user-images.githubusercontent.com/64303057/115991062-bf96d780-a5f0-11eb-90e3-7a3c993e3c89.png)
+
+Pada proses ini, dibuatkan sebuah char `keterangan_new[100]` yang akan menyimpan alamat dari direktori ditambah dengan keterangan.txt, lalu lakukan `fopen` agar dapat menambahkan teks pada keterangan.txt.
+
+```c
+strncat(temp, &petfile[j], 1);
+```
+
+Ini yang akan dilakukan program jika belum menemuka karakter ";" pada nama file. Setiap char pada petfile akan dimasukkan ke variabel `temp` satu per satu.
+
+### Cara Pengerjaan 2C (Untuk yang fotonya ada dua hewan)
+
+![carbon (9)](https://user-images.githubusercontent.com/64303057/115991439-9aa36400-a5f2-11eb-97a7-092cdab50831.png)
+
+Ketika count2 sudah menjadi 1, maka lakukan lagi permisalan. Jika program kembali menemukan ";" lainnya, maka nama file tersebut akan diganti namanya dan ditambahkan ".jpg", dan pindahkan foto hewan tersebut ke folder yang sesuai dengan jenisnya.
+
+Untuk langkah berikutnya, prosesnya hampir sama dengan cara yang foto hewannya ada satu, lakukan terus pengulangan hingga bertemu akhiran ".jpg", lalu tambahkan teks "tahun" pada akhir keterangan.txt. 
+
+Lalu, lakukan `closedir(dir)` untuk mengakhiri travers direktori.
+
+### Output
+
+1. Direktori modul2/petshop sudah terbentuk beserta folder-folder untuk tiap jenis hewan
+![Screenshot 2021-04-25 183559](https://user-images.githubusercontent.com/64303057/115991930-28804e80-a5f5-11eb-826e-d6164a9d340f.png)
+
+2. Setiap foto sudah menempati folder yang sesuai, contohnya seperti foto-foto anjing yang masuk pada folder "dog". Nama file juga sudah diubah menjadi "namahewan.jpg".
+![Screenshot 2021-04-25 183805](https://user-images.githubusercontent.com/64303057/115992016-9cbaf200-a5f5-11eb-8961-4f06769e262c.png)
+
+3. Contoh isi dari keterangan.txt pada folder "dog"
+![Screenshot 2021-04-25 183823](https://user-images.githubusercontent.com/64303057/115992028-aba1a480-a5f5-11eb-9d3a-4ec00d1a3054.png)
+
+### Kendala Selama Pengerjaan
+
+1. Awalnya masih kurang paham tentang cara menjalankan proses yang banyak dalam satu file (fork), sehingga mencari referensi lebih banyak terlebih dulu.
+2. Kesulitan untuk memisahkan foto yang ada dua hewan untuk diletakkan pada folder, terutama yang hewannya berbeda.
+3. Sempat melakukan revisi lagi karena lupa memanggil salah satu fork(), yang menyebabkan sebagian program jadi tidak berjalan.
+
+
